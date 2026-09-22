@@ -229,3 +229,36 @@
       animation-iteration-count:1 !important;
     }
   }
+
+  /* ---------- Ajustes Responsivos para Móvil ---------- */
+@media (max-width: 768px) {
+    /* Reducimos un poco la altura del lienzo SVG y lo anclamos más abajo */
+    #garden-svg {
+      height: 75%;
+      bottom: -2%;
+    }
+
+    /* Subimos los botones y textos hacia la parte superior de la pantalla */
+    .ui {
+      align-items: flex-start;
+      padding-top: 18vh;
+    }
+
+    /* Hacemos la carta más compacta para que respete el espacio de las flores */
+    .carta {
+      padding: 30px 24px 20px;
+      margin-top: 5vh;
+    }
+
+    /* Subimos el destello del sol para que acompañe a la nota */
+    .sun-glow {
+      top: 40%;
+      width: 90vmax;
+      height: 90vmax;
+    }
+
+    /* Ajustamos las montañas para que no se vean desproporcionadas */
+    .hills.back { bottom: 20%; height: 18%; }
+    .hills.front { bottom: 15%; height: 14%; }
+    .ground { height: 18%; }
+  }
