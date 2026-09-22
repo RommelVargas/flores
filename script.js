@@ -73,7 +73,6 @@
     glow.setAttribute('filter','url(#softGlow)');
     head.appendChild(glow);
 
-    // Tipos de flores amarillas
     if (f.type === 'girasol') {
       buildRing(head, f.petals, 26*f.scale, 13*f.scale, 4*f.scale, f.gradId, 12, 0);
       buildRing(head, f.petals-2, 18*f.scale, 9.5*f.scale, 2*f.scale, f.gradId, 10, 180/f.petals);
@@ -116,11 +115,10 @@
     stem.setAttribute('d', `M${f.baseX},${f.baseY} C ${c1x},${c1y} ${c2x},${c2y} ${f.headX},${f.headY}`);
     stem.setAttribute('fill','none');
     stem.setAttribute('stroke','url(#stemGrad)');
-    stem.setAttribute('stroke-width', 3.5 * f.scale); // Tallos un poco más gruesos
+    stem.setAttribute('stroke-width', 3.5 * f.scale);
     stem.setAttribute('stroke-linecap','round');
     sway.appendChild(stem);
 
-    // Hojas muy reducidas (solo 15% de probabilidad) porque con tantas flores el verde taparía el amarillo
     if(Math.random() < 0.15) {
       const dir = dx >= 0 ? 1 : -1;
       sway.appendChild(buildLeaf(f.baseX+dx*0.5, f.baseY+dy*0.5, dir*rand(25,45), f.scale*0.8));
@@ -170,7 +168,7 @@
     g.appendChild(loop(1));
     const knot = document.createElementNS(svgNS,'circle');
     knot.setAttribute('cx', wx); knot.setAttribute('cy', wy);
-    knot.setAttribute('r', 16); // Nudo más grande para un ramo gigante
+    knot.setAttribute('r', 16);
     knot.setAttribute('fill','url(#ribbonGrad)');
     knot.setAttribute('stroke','rgba(120,75,20,0.35)');
     knot.setAttribute('stroke-width','1');
@@ -181,20 +179,17 @@
   /* ============ Distribución Masiva (El Super Ramo) ============ */
   const wx = 720, wy = 690;
   const flowersData = [];
-  const totalFlowers = 180; // ¡A tope!
+  const totalFlowers = 180;
 
   for(let i=0; i<totalFlowers; i++) {
-    // Ángulo amplio para llenar la pantalla
     const angle = rand(-55, 55);
     const rad = angle * Math.PI / 180;
 
-    // Distribución usando raíz cuadrada para que se expanda hacia los bordes y no sature el centro
     const dist = Math.sqrt(Math.random()) * 320 + 30;
 
     const headX = wx + Math.sin(rad) * dist;
     const headY = wy - Math.cos(rad) * dist * 1.05;
 
-    // Base de agarre más ancha para simular un puñado grueso de tallos
     const baseX = wx + rand(-25, 25);
     const baseY = wy + rand(-10, 10);
 
@@ -209,16 +204,17 @@
       type = 'ancha'; scale = rand(0.6, 1.0); grad = pick(grads); petals = pick([6, 7, 8]);
     }
 
-    flowersData.push({ baseX, baseY, headX, headY, type, scale, gradId: grad, petals, angle });
+    // Delay de crecimiento de adentro hacia afuera
+    const delay = 0.2 + (dist / 350) * 1.8;
+
+    flowersData.push({ baseX, baseY, headX, headY, type, scale, gradId: grad, petals, angle, delay });
   }
 
   // Orden estricto de Y para profundidad 3D
   flowersData.sort((a, b) => a.headY - b.headY);
 
-  let delay = 0.2;
   flowersData.forEach(f => {
-    root.appendChild(buildBouquetFlower(f, delay));
-    delay += 0.015; // Animación de crecimiento rápida para que sea un estallido
+    root.appendChild(buildBouquetFlower(f, f.delay));
   });
 
   root.appendChild(buildRibbon(wx, wy));
@@ -282,5 +278,5 @@
 
   /* ============ Detalle sorpresa ============ */
   const flash = document.getElementById('flash');
-  setTimeout(()=>{ flash.classList.add('on'); }, 3500); // El flash se adelanta porque la animación es más rápida
+  setTimeout(()=>{ flash.classList.add('on'); }, 3500);
 })();
