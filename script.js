@@ -4,12 +4,10 @@
   const rand = (a,b) => Math.random()*(b-a)+a;
   const pick = arr => arr[Math.floor(Math.random()*arr.length)];
 
+  // Exclusivamente tonos amarillos para todo el ramo
   const grads = ['petalGradA','petalGradB'];
 
-  // === DETECTOR DE DISPOSITIVO ===
-  // Si la pantalla es pequeña (celular), bajamos la carga gráfica
-  const isMobile = window.innerWidth <= 768;
-
+  /* ============ Geometría de pétalos y hojas ============ */
   function petalPath(L, W){
     const jx = rand(-2,2), jy = rand(-2,2);
     return `M0,0 C ${-W+jx},${-L*0.4} ${-W*0.7},${-L} 0,${-L*0.95+jy} `
@@ -45,14 +43,15 @@
     return leaf;
   }
 
+  /* ============ Generador de Tipos de Flores ============ */
   function addCenter(head, radius, fill) {
     const center = document.createElementNS(svgNS,'circle');
     center.setAttribute('r', radius);
     center.setAttribute('fill', fill);
     head.appendChild(center);
 
-    // En móvil reducimos los puntitos del centro a la mitad para ahorrar memoria
-    const dotCount = isMobile ? 3 : 7;
+    // Dinámico según el ancho de pantalla para ahorrar memoria
+    const dotCount = window.innerWidth <= 768 ? 3 : 7;
     for(let i=0; i<dotCount; i++){
       const dot = document.createElementNS(svgNS,'circle');
       const a = rand(0,360), r = rand(1, radius*0.75);
@@ -95,6 +94,7 @@
     return head;
   }
 
+  /* ============ Construcción con Tallo ============ */
   function buildBouquetFlower(f, growDelay) {
     const anchor = document.createElementNS(svgNS,'g');
     anchor.setAttribute('class', `flower-anchor flower`);
@@ -140,6 +140,7 @@
     return anchor;
   }
 
+  /* ============ Listón ============ */
   function buildRibbon(wx, wy){
     const g = document.createElementNS(svgNS,'g');
     g.setAttribute('class','ribbon');
@@ -183,12 +184,18 @@
     return g;
   }
 
-  /* ============ Distribución Masiva ============ */
+  /* ============ Distribución Masiva Responsiva ============ */
   const wx = 720, wy = 690;
   const flowersData = [];
 
-  // 180 para PC (se ve espectacular), 75 para móvil (no da lag y llena igual la pantalla)
-  const totalFlowers = isMobile ? 75 : 180;
+  // Fórmula de densidad: Calcula el ancho de la ventana actual.
+  // Limita a un máximo de 180 (PCs grandes) y un mínimo de 60 (celulares muy estrechos).
+  let totalFlowers = Math.floor(window.innerWidth / 8);
+  if (totalFlowers > 180) totalFlowers = 180;
+  if (totalFlowers < 60) totalFlowers = 60;
+
+  // Calculamos un factor multiplicador (de 0 a 1) para escalar también las partículas
+  const scaleFactor = totalFlowers / 180;
 
   for(let i=0; i<totalFlowers; i++) {
     const angle = rand(-55, 55);
@@ -239,10 +246,10 @@
     decoDefs.appendChild(decoHeadWrapper);
   }
 
-  /* ============ Partículas (Reducidas en móvil) ============ */
-  const firefliesCount = isMobile ? 8 : 25;
-  const petalsCount = isMobile ? 5 : 15;
-  const sparklesCount = isMobile ? 8 : 25;
+  /* ============ Partículas (Escalado Proporcional) ============ */
+  const firefliesCount = Math.floor(25 * scaleFactor);
+  const petalsCount = Math.floor(15 * scaleFactor);
+  const sparklesCount = Math.floor(25 * scaleFactor);
 
   const fireflyBox = document.getElementById('fireflies');
   for(let i=0;i<firefliesCount;i++){

@@ -261,45 +261,36 @@ html {
     animation-iteration-count: 1 !important;
   }
 }
-/* ---------- Ajustes Responsivos para Móvil ---------- */
+/* ---------- Ajustes Responsivos Fluidos ---------- */
 @media (max-width: 768px) {
   #garden-svg {
-    width: 260%;
-    left: -80%;
-    height: 85%;
-    bottom: -2%;
+    width: 100%;
+    left: 0;
+    height: 80%;
   }
 
   .ui {
     align-items: center;
-    padding-top: 15vh;
+    padding-top: 10vh;
   }
 
   .carta {
-    width: 90%;
-    margin-top: 5vh;
-    padding: 30px 20px 20px;
+    width: 92%;
+    margin-top: 2vh;
+    padding: 25px 20px 20px;
   }
 
   .sun-glow {
-    top: 35%;
-    width: 100vmax;
-    height: 100vmax;
+    top: 30%;
+    width: 120vmax;
+    height: 120vmax;
   }
 
-  /* === PARCHE DE RENDIMIENTO EXTREMO (ANTILAG) === */
-  .flower {
-    /* El drop-shadow es el asesino número 1 de rendimiento en móviles. Lo apagamos. */
-    filter: none !important;
-  }
-
-  .flower-head-breathe {
-    /* Apagamos la animación de latido/respiración para ahorrar cálculos */
-    animation: none !important;
-  }
-
+  /* Antilag dinámico para móviles */
+  .flower { filter: none !important; }
+  .flower-head-breathe { animation: none !important; }
   .flower-sway {
-    /* Hacemos el balanceo súper lento y sutil para que no exija tanto al procesador */
-    animation-duration: 15s !important;
+    animation: none !important;
+    transform: rotate(0deg) !important;
   }
 }
