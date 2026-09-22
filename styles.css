@@ -261,32 +261,34 @@ html {
     animation-iteration-count: 1 !important;
   }
 }
-/* ---------- Ajustes Responsivos Fluidos ---------- */
+/* ---------- Ajustes Responsivos para Móvil ---------- */
 @media (max-width: 768px) {
+  /* Volvemos al enmarcado que sí llenaba la pantalla */
   #garden-svg {
-    width: 100%;
-    left: 0;
-    height: 80%;
+    width: 260%;
+    left: -80%;
+    height: 85%;
+    bottom: -2%;
   }
 
   .ui {
     align-items: center;
-    padding-top: 10vh;
+    padding-top: 15vh;
   }
 
   .carta {
-    width: 92%;
-    margin-top: 2vh;
-    padding: 25px 20px 20px;
+    width: 90%;
+    margin-top: 5vh;
+    padding: 30px 20px 20px;
   }
 
   .sun-glow {
-    top: 30%;
-    width: 120vmax;
-    height: 120vmax;
+    top: 35%;
+    width: 100vmax;
+    height: 100vmax;
   }
 
-  /* Antilag dinámico para móviles */
+  /* === PARCHE DE RENDIMIENTO EXTREMO (ANTILAG) === */
   .flower { filter: none !important; }
   .flower-head-breathe { animation: none !important; }
   .flower-sway {
