@@ -70,7 +70,7 @@
     const glow = document.createElementNS(svgNS,'circle');
     glow.setAttribute('r', 30 * f.scale);
     glow.setAttribute('fill','url(#glowGrad)');
-    glow.setAttribute('filter','url(#softGlow)');
+    // ELIMINADO: el filtro softGlow que estaba reventando la memoria del celular
     head.appendChild(glow);
 
     if (f.type === 'girasol') {
@@ -124,9 +124,11 @@
       sway.appendChild(buildLeaf(f.baseX+dx*0.5, f.baseY+dy*0.5, dir*rand(25,45), f.scale*0.8));
     }
 
+    // El envoltorio se encarga de la posición espacial (X, Y)
     const headWrapper = document.createElementNS(svgNS, 'g');
     headWrapper.setAttribute('transform', `translate(${f.headX},${f.headY})`);
 
+    // La flor interior se encarga de la animación de respiración y escala
     const head = buildFlowerHead(f);
     head.style.transformBox = 'fill-box';
     head.style.transformOrigin = 'center';
@@ -227,19 +229,19 @@
 
   // Flor decorativa para la carta
   const decoDefs = document.querySelector('#garden-svg defs');
-  const decoObj = { type: 'girasol', scale: 1, gradId: 'petalGradA', petals: 10 };
+  if (decoDefs) {
+    const decoObj = { type: 'girasol', scale: 1, gradId: 'petalGradA', petals: 10 };
+    const decoHeadWrapper = document.createElementNS(svgNS, 'g');
+    const decoFlower = buildFlowerHead(decoObj);
+    decoFlower.style.transformBox = 'fill-box';
+    decoFlower.style.transformOrigin = 'center';
+    decoFlower.removeAttribute('class');
+    decoFlower.id = 'deco-flower';
+    decoFlower.classList.remove('flower-head-breathe');
 
-  // Envoltorio de posición para evitar el bug en móviles también en la carta
-  const decoHeadWrapper = document.createElementNS(svgNS, 'g');
-  const decoFlower = buildFlowerHead(decoObj);
-  decoFlower.style.transformBox = 'fill-box';
-  decoFlower.style.transformOrigin = 'center';
-  decoFlower.removeAttribute('class');
-  decoFlower.id = 'deco-flower';
-  decoFlower.classList.remove('flower-head-breathe');
-
-  decoHeadWrapper.appendChild(decoFlower);
-  if(decoDefs) decoDefs.appendChild(decoHeadWrapper);
+    decoHeadWrapper.appendChild(decoFlower);
+    decoDefs.appendChild(decoHeadWrapper);
+  }
 
   /* ============ Partículas ============ */
   const fireflyBox = document.getElementById('fireflies');
@@ -252,7 +254,7 @@
     f.style.setProperty('--fdelay', rand(0,8).toFixed(2)+'s');
     f.style.setProperty('--fx', rand(-40,40)+'px');
     f.style.setProperty('--fy', rand(-50,-10)+'px');
-    fireflyBox.appendChild(f);
+    if(fireflyBox) fireflyBox.appendChild(f);
   }
 
   const petalBox = document.getElementById('petals-fall');
@@ -263,7 +265,7 @@
     p.style.setProperty('--pdur', rand(11,18).toFixed(2)+'s');
     p.style.setProperty('--pdelay', rand(0,14).toFixed(2)+'s');
     p.style.setProperty('--px', rand(-80,80)+'px');
-    petalBox.appendChild(p);
+    if(petalBox) petalBox.appendChild(p);
   }
 
   const sparkleBox = document.getElementById('sparkles');
@@ -274,22 +276,32 @@
     s.style.top = rand(25,72)+'%';
     s.style.setProperty('--tdur', rand(2.5,5).toFixed(2)+'s');
     s.style.setProperty('--tdelay', rand(0,5).toFixed(2)+'s');
-    sparkleBox.appendChild(s);
+    if(sparkleBox) sparkleBox.appendChild(s);
   }
 
   /* ============ Vistas ============ */
   const viewFlowers = document.getElementById('view-flowers');
   const viewNote = document.getElementById('view-note');
-  document.getElementById('btn-open').addEventListener('click', ()=>{
-    viewFlowers.classList.add('hidden');
-    viewNote.classList.remove('hidden');
-  });
-  document.getElementById('btn-back').addEventListener('click', ()=>{
-    viewNote.classList.add('hidden');
-    viewFlowers.classList.remove('hidden');
-  });
+  const btnOpen = document.getElementById('btn-open');
+  const btnBack = document.getElementById('btn-back');
+
+  if(btnOpen && viewFlowers && viewNote) {
+    btnOpen.addEventListener('click', ()=>{
+      viewFlowers.classList.add('hidden');
+      viewNote.classList.remove('hidden');
+    });
+  }
+
+  if(btnBack && viewFlowers && viewNote) {
+    btnBack.addEventListener('click', ()=>{
+      viewNote.classList.add('hidden');
+      viewFlowers.classList.remove('hidden');
+    });
+  }
 
   /* ============ Detalle sorpresa ============ */
   const flash = document.getElementById('flash');
-  setTimeout(()=>{ flash.classList.add('on'); }, 3500);
+  if(flash) {
+    setTimeout(()=>{ flash.classList.add('on'); }, 3500);
+  }
 })();
