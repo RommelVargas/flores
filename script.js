@@ -4,10 +4,12 @@
   const rand = (a,b) => Math.random()*(b-a)+a;
   const pick = arr => arr[Math.floor(Math.random()*arr.length)];
 
-  // Exclusivamente tonos amarillos para todo el ramo
   const grads = ['petalGradA','petalGradB'];
 
-  /* ============ Geometría de pétalos y hojas ============ */
+  // === DETECTOR DE DISPOSITIVO ===
+  // Si la pantalla es pequeña (celular), bajamos la carga gráfica
+  const isMobile = window.innerWidth <= 768;
+
   function petalPath(L, W){
     const jx = rand(-2,2), jy = rand(-2,2);
     return `M0,0 C ${-W+jx},${-L*0.4} ${-W*0.7},${-L} 0,${-L*0.95+jy} `
@@ -43,13 +45,15 @@
     return leaf;
   }
 
-  /* ============ Generador de Tipos de Flores ============ */
   function addCenter(head, radius, fill) {
     const center = document.createElementNS(svgNS,'circle');
     center.setAttribute('r', radius);
     center.setAttribute('fill', fill);
     head.appendChild(center);
-    for(let i=0; i<7; i++){
+
+    // En móvil reducimos los puntitos del centro a la mitad para ahorrar memoria
+    const dotCount = isMobile ? 3 : 7;
+    for(let i=0; i<dotCount; i++){
       const dot = document.createElementNS(svgNS,'circle');
       const a = rand(0,360), r = rand(1, radius*0.75);
       dot.setAttribute('cx', Math.cos(a)*r);
@@ -70,7 +74,6 @@
     const glow = document.createElementNS(svgNS,'circle');
     glow.setAttribute('r', 30 * f.scale);
     glow.setAttribute('fill','url(#glowGrad)');
-    // ELIMINADO: el filtro softGlow que estaba reventando la memoria del celular
     head.appendChild(glow);
 
     if (f.type === 'girasol') {
@@ -92,7 +95,6 @@
     return head;
   }
 
-  /* ============ Construcción con Tallo ============ */
   function buildBouquetFlower(f, growDelay) {
     const anchor = document.createElementNS(svgNS,'g');
     anchor.setAttribute('class', `flower-anchor flower`);
@@ -124,11 +126,9 @@
       sway.appendChild(buildLeaf(f.baseX+dx*0.5, f.baseY+dy*0.5, dir*rand(25,45), f.scale*0.8));
     }
 
-    // El envoltorio se encarga de la posición espacial (X, Y)
     const headWrapper = document.createElementNS(svgNS, 'g');
     headWrapper.setAttribute('transform', `translate(${f.headX},${f.headY})`);
 
-    // La flor interior se encarga de la animación de respiración y escala
     const head = buildFlowerHead(f);
     head.style.transformBox = 'fill-box';
     head.style.transformOrigin = 'center';
@@ -140,7 +140,6 @@
     return anchor;
   }
 
-  /* ============ Listón ============ */
   function buildRibbon(wx, wy){
     const g = document.createElementNS(svgNS,'g');
     g.setAttribute('class','ribbon');
@@ -184,17 +183,18 @@
     return g;
   }
 
-  /* ============ Distribución Masiva (El Super Ramo) ============ */
+  /* ============ Distribución Masiva ============ */
   const wx = 720, wy = 690;
   const flowersData = [];
-  const totalFlowers = 180;
+
+  // 180 para PC (se ve espectacular), 75 para móvil (no da lag y llena igual la pantalla)
+  const totalFlowers = isMobile ? 75 : 180;
 
   for(let i=0; i<totalFlowers; i++) {
     const angle = rand(-55, 55);
     const rad = angle * Math.PI / 180;
 
     const dist = Math.sqrt(Math.random()) * 320 + 30;
-
     const headX = wx + Math.sin(rad) * dist;
     const headY = wy - Math.cos(rad) * dist * 1.05;
 
@@ -212,13 +212,10 @@
       type = 'ancha'; scale = rand(0.6, 1.0); grad = pick(grads); petals = pick([6, 7, 8]);
     }
 
-    // Delay de crecimiento de adentro hacia afuera
     const delay = 0.2 + (dist / 350) * 1.8;
-
     flowersData.push({ baseX, baseY, headX, headY, type, scale, gradId: grad, petals, angle, delay });
   }
 
-  // Orden estricto de Y para profundidad 3D
   flowersData.sort((a, b) => a.headY - b.headY);
 
   flowersData.forEach(f => {
@@ -227,7 +224,6 @@
 
   root.appendChild(buildRibbon(wx, wy));
 
-  // Flor decorativa para la carta
   const decoDefs = document.querySelector('#garden-svg defs');
   if (decoDefs) {
     const decoObj = { type: 'girasol', scale: 1, gradId: 'petalGradA', petals: 10 };
@@ -243,9 +239,13 @@
     decoDefs.appendChild(decoHeadWrapper);
   }
 
-  /* ============ Partículas ============ */
+  /* ============ Partículas (Reducidas en móvil) ============ */
+  const firefliesCount = isMobile ? 8 : 25;
+  const petalsCount = isMobile ? 5 : 15;
+  const sparklesCount = isMobile ? 8 : 25;
+
   const fireflyBox = document.getElementById('fireflies');
-  for(let i=0;i<25;i++){
+  for(let i=0;i<firefliesCount;i++){
     const f = document.createElement('div');
     f.className = 'firefly';
     f.style.left = rand(4,96)+'%';
@@ -258,7 +258,7 @@
   }
 
   const petalBox = document.getElementById('petals-fall');
-  for(let i=0;i<15;i++){
+  for(let i=0;i<petalsCount;i++){
     const p = document.createElement('div');
     p.className = 'falling-petal';
     p.style.left = rand(0,100)+'%';
@@ -269,7 +269,7 @@
   }
 
   const sparkleBox = document.getElementById('sparkles');
-  for(let i=0;i<25;i++){
+  for(let i=0;i<sparklesCount;i++){
     const s = document.createElement('div');
     s.className = 'sparkle';
     s.style.left = rand(5,95)+'%';
@@ -299,7 +299,6 @@
     });
   }
 
-  /* ============ Detalle sorpresa ============ */
   const flash = document.getElementById('flash');
   if(flash) {
     setTimeout(()=>{ flash.classList.add('on'); }, 3500);
