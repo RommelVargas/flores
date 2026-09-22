@@ -124,9 +124,15 @@
       sway.appendChild(buildLeaf(f.baseX+dx*0.5, f.baseY+dy*0.5, dir*rand(25,45), f.scale*0.8));
     }
 
+    const headWrapper = document.createElementNS(svgNS, 'g');
+    headWrapper.setAttribute('transform', `translate(${f.headX},${f.headY})`);
+
     const head = buildFlowerHead(f);
-    head.setAttribute('transform', `translate(${f.headX},${f.headY})`);
-    sway.appendChild(head);
+    head.style.transformBox = 'fill-box';
+    head.style.transformOrigin = 'center';
+
+    headWrapper.appendChild(head);
+    sway.appendChild(headWrapper);
 
     anchor.appendChild(sway);
     return anchor;
@@ -222,11 +228,18 @@
   // Flor decorativa para la carta
   const decoDefs = document.querySelector('#garden-svg defs');
   const decoObj = { type: 'girasol', scale: 1, gradId: 'petalGradA', petals: 10 };
+
+  // Envoltorio de posición para evitar el bug en móviles también en la carta
+  const decoHeadWrapper = document.createElementNS(svgNS, 'g');
   const decoFlower = buildFlowerHead(decoObj);
+  decoFlower.style.transformBox = 'fill-box';
+  decoFlower.style.transformOrigin = 'center';
   decoFlower.removeAttribute('class');
   decoFlower.id = 'deco-flower';
   decoFlower.classList.remove('flower-head-breathe');
-  decoDefs.appendChild(decoFlower);
+
+  decoHeadWrapper.appendChild(decoFlower);
+  if(decoDefs) decoDefs.appendChild(decoHeadWrapper);
 
   /* ============ Partículas ============ */
   const fireflyBox = document.getElementById('fireflies');
