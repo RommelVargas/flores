@@ -1,261 +1,290 @@
-  :root{
-    --dusk-top:#2c2140;
-    --dusk-mid:#6a3b5e;
-    --dusk-low:#e8875c;
-    --sun:#ffd98a;
-    --ink:#3a2b1a;
-    --paper:#fffaf1;
-    --gold:#c9862c;
-    box-sizing:border-box;
-    padding-top:env(safe-area-inset-top,0px);
-    padding-bottom:env(safe-area-inset-bottom,0px);
-  }
-  *{box-sizing:inherit;}
-  html,body{
-    height:100%;
-    margin:0;
-    background:var(--dusk-top);
-    overflow:hidden;
-    font-family:'Cormorant Garamond', serif;
-  }
-  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+:root {
+  --dusk-top: #2c2140;
+  --dusk-mid: #6a3b5e;
+  --dusk-low: #e8875c;
+  --sun: #ffd98a;
+  --ink: #3a2b1a;
+  --paper: #fffaf1;
+  --gold: #c9862c;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
 
-  #scene{
-    position:relative;
-    width:100%;
-    height:100%;
-    min-height:100dvh;
-    overflow:hidden;
-    isolation:isolate;
+* {
+  box-sizing: inherit;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background: var(--dusk-top);
+  overflow: hidden;
+  font-family: 'Cormorant Garamond', serif;
+}
+
+html {
+  scroll-padding-top: env(safe-area-inset-top, 0px);
+}
+
+#scene {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 100dvh;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* ---------- Cielo y luz ---------- */
+.sky {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg,
+    var(--dusk-top) 0%,
+    var(--dusk-mid) 45%,
+    var(--dusk-low) 78%,
+    #f7b46a 100%);
+  opacity: 0;
+  animation: fadeIn 2.4s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+.sun-glow {
+  position: absolute;
+  left: 50%; top: 58%;
+  width: 60vmax; height: 60vmax;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(255,217,138,0.55) 0%, rgba(255,217,138,0.18) 35%, rgba(255,217,138,0) 65%);
+  opacity: 0;
+  animation: fadeIn 3s ease-out 0.4s forwards;
+  filter: blur(2px);
+}
+
+.hills {
+  position: absolute; left: -5%; width: 110%;
+  opacity: 0;
+  animation: fadeIn 2.6s ease-out forwards;
+}
+
+.hills.back {
+  bottom: 26%; height: 22%;
+  background: radial-gradient(120% 100% at 50% 100%, #7a4f63 0%, transparent 70%);
+  filter: blur(1px);
+  animation-delay: .5s;
+}
+
+.hills.front {
+  bottom: 18%; height: 16%;
+  background: radial-gradient(120% 100% at 50% 100%, #5b3550 0%, transparent 70%);
+  animation-delay: .8s;
+}
+
+/* ---------- Suelo ---------- */
+.ground {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 22%;
+  background: linear-gradient(180deg, #3d5a2e 0%, #2a4020 60%, #1c2e15 100%);
+  opacity: 0;
+  animation: fadeIn 2s ease-out .6s forwards;
+}
+
+.ground-mist {
+  position: absolute; left: 0; right: 0; bottom: 19%; height: 9%;
+  background: linear-gradient(180deg, rgba(255,220,170,.22), rgba(255,220,170,0));
+  pointer-events: none;
+}
+
+/* ---------- Ramo SVG ---------- */
+#garden-svg {
+  position: absolute; left: 0; bottom: 0; width: 100%; height: 84%;
+  display: block;
+  overflow: visible;
+}
+
+.flower-anchor {
+  opacity: 0;
+  animation: growUp 1.4s cubic-bezier(.16,1,.3,1) forwards;
+  animation-delay: var(--grow-delay, 0s);
+}
+
+@keyframes growUp {
+  0% { transform: scale(0.02, 0.02); opacity: 0; }
+  40% { opacity: 1; }
+  100% { transform: scale(1, 1); opacity: 1; }
+}
+
+.flower-sway {
+  animation: sway var(--sway-dur, 6s) ease-in-out var(--sway-delay, 0s) infinite;
+}
+
+@keyframes sway {
+  0%, 100% { transform: rotate(-1.2deg); }
+  50% { transform: rotate(1.2deg); }
+}
+
+.flower-head-breathe {
+  animation: breathe var(--breathe-dur, 7s) ease-in-out var(--breathe-delay, 0s) infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+.flower {
+  filter: drop-shadow(0 3px 5px rgba(28, 14, 5, 0.25));
+  opacity: 0.98;
+}
+
+.ribbon {
+  opacity: 0;
+  animation: fadeIn 1.2s ease-out 2.6s forwards;
+}
+
+/* Destello sorpresa */
+.surprise-flash {
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% 60%, rgba(255,240,200,.55), rgba(255,240,200,0) 55%);
+  opacity: 0; pointer-events: none;
+}
+.surprise-flash.on { animation: flash 2.6s ease-out forwards; }
+
+@keyframes flash {
+  0% {opacity: 0;} 25% {opacity: 1;} 100% {opacity: 0;}
+}
+
+/* ---------- Partículas ---------- */
+#fireflies, #petals-fall, #sparkles { position: absolute; inset: 0; pointer-events: none; }
+
+.firefly {
+  position: absolute; width: 5px; height: 5px; border-radius: 50%;
+  background: #ffe9a8;
+  box-shadow: 0 0 6px 2px rgba(255,233,168,.9), 0 0 14px 6px rgba(255,200,120,.35);
+  opacity: 0;
+  animation: fireflyMove var(--fdur, 9s) ease-in-out var(--fdelay, 0s) infinite;
+}
+
+@keyframes fireflyMove {
+  0% { transform: translate(0,0); opacity: 0; }
+  10% { opacity: .9; }
+  50% { transform: translate(var(--fx, 20px), var(--fy, -30px)); opacity: .5; }
+  90% { opacity: .9; }
+  100% { transform: translate(0,0); opacity: 0; }
+}
+
+.falling-petal {
+  position: absolute; top: -5%; width: 10px; height: 8px;
+  background: linear-gradient(160deg, #ffe27a, #f2932c);
+  border-radius: 0% 100% 0% 100% / 0% 100% 0% 100%;
+  opacity: .85;
+  animation: petalFall var(--pdur, 14s) linear var(--pdelay, 0s) infinite;
+}
+
+@keyframes petalFall {
+  0% { transform: translate(0,0) rotate(0deg); opacity: 0; }
+  8% { opacity: .85; }
+  100% { transform: translate(var(--px, 60px), 115vh) rotate(300deg); opacity: .2; }
+}
+
+.sparkle {
+  position: absolute; width: 4px; height: 4px;
+  background: radial-gradient(circle, #fff6d8 0%, rgba(255,246,216,0) 70%);
+  border-radius: 50%;
+  animation: twinkle var(--tdur, 3.5s) ease-in-out var(--tdelay, 0s) infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: .15; transform: scale(.7); }
+  50% { opacity: 1; transform: scale(1.4); }
+}
+
+/* ---------- Interfaz ---------- */
+.ui { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 5; }
+.view { display: flex; flex-direction: column; align-items: center; text-align: center; transition: opacity .9s ease; padding: 0 24px; }
+.view.hidden { opacity: 0; pointer-events: none; position: absolute; }
+
+.hint {
+  font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 500;
+  font-size: clamp(1.1rem, 2.6vw, 1.5rem); color: #fff3df;
+  text-shadow: 0 2px 10px rgba(0,0,0,.35); letter-spacing: .02em;
+  opacity: 0; transform: translateY(10px);
+  animation: riseIn 1.4s ease-out 3.4s forwards;
+  margin-bottom: 34px;
+}
+
+@keyframes riseIn { to { opacity: 1; transform: translateY(0); } }
+
+.btn {
+  font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; letter-spacing: .03em;
+  color: #3a2b1a; background: linear-gradient(180deg, #ffe9b0, #f3c366);
+  border: 1px solid rgba(122,75,18,.35); padding: 14px 34px; border-radius: 30px; cursor: pointer;
+  box-shadow: 0 6px 18px rgba(90,50,10,.35), inset 0 1px 0 rgba(255,255,255,.6);
+  opacity: 0; transform: translateY(10px);
+  animation: riseIn 1.4s ease-out 4s forwards;
+  transition: transform .35s ease, box-shadow .35s ease;
+}
+
+.btn:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(90,50,10,.4); }
+.btn:focus-visible { outline: 2px solid #fff3df; outline-offset: 3px; }
+
+.carta {
+  max-width: min(480px, 86vw);
+  background: linear-gradient(180deg, var(--paper), #fdf1da);
+  border-radius: 6px; padding: 44px 34px 32px;
+  box-shadow: 0 20px 50px rgba(30,15,5,.45);
+  position: relative;
+}
+
+.carta::before {
+  content: ""; position: absolute; inset: 10px;
+  border: 1px solid rgba(180,130,50,.25); border-radius: 3px; pointer-events: none;
+}
+
+.carta-flower { width: 56px; height: 56px; margin: 0 auto 14px; display: block; }
+
+.texto-manuscrito {
+  font-family: 'Dancing Script', cursive;
+  font-size: clamp(1.4rem, 3.4vw, 1.9rem); line-height: 1.5; color: var(--ink);
+  margin: 0 0 26px;
+}
+
+.btn-mini {
+  font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: .95rem;
+  color: var(--gold); background: none; border: none; cursor: pointer; padding: 6px 10px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flower-anchor, .flower-sway, .flower-head-breathe, .firefly, .falling-petal, .sparkle, .hint, .btn, .sky, .hills, .ground, .ribbon {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* ---------- Ajustes Responsivos para Móvil ---------- */
+@media (max-width: 768px) {
+  #garden-svg {
+    width: 260%;
+    left: -80%;
+    height: 85%;
+    bottom: -2%;
   }
 
-  /* ---------- Cielo y luz ---------- */
-  .sky{
-    position:absolute; inset:0;
-    background:linear-gradient(180deg,
-      var(--dusk-top) 0%,
-      var(--dusk-mid) 45%,
-      var(--dusk-low) 78%,
-      #f7b46a 100%);
-    opacity:0;
-    animation:fadeIn 2.4s ease-out forwards;
-  }
-  @keyframes fadeIn{ to{opacity:1;} }
-  .sun-glow{
-    position:absolute;
-    left:50%; top:58%;
-    width:60vmax; height:60vmax;
-    transform:translate(-50%,-50%);
-    background:radial-gradient(circle, rgba(255,217,138,0.55) 0%, rgba(255,217,138,0.18) 35%, rgba(255,217,138,0) 65%);
-    opacity:0;
-    animation:fadeIn 3s ease-out 0.4s forwards;
-    filter:blur(2px);
-  }
-  .hills{
-    position:absolute; left:-5%; width:110%;
-    opacity:0;
-    animation:fadeIn 2.6s ease-out forwards;
-  }
-  .hills.back{
-    bottom:26%; height:22%;
-    background:radial-gradient(120% 100% at 50% 100%, #7a4f63 0%, transparent 70%);
-    filter:blur(1px);
-    animation-delay:.5s;
-  }
-  .hills.front{
-    bottom:18%; height:16%;
-    background:radial-gradient(120% 100% at 50% 100%, #5b3550 0%, transparent 70%);
-    animation-delay:.8s;
+  .ui {
+    align-items: center;
+    padding-top: 15vh;
   }
 
-  /* ---------- Suelo ---------- */
-  .ground{
-    position:absolute; left:0; right:0; bottom:0; height:22%;
-    background:linear-gradient(180deg, #3d5a2e 0%, #2a4020 60%, #1c2e15 100%);
-    opacity:0;
-    animation:fadeIn 2s ease-out .6s forwards;
-  }
-  .ground-mist{
-    position:absolute; left:0; right:0; bottom:19%; height:9%;
-    background:linear-gradient(180deg, rgba(255,220,170,.22), rgba(255,220,170,0));
-    pointer-events:none;
+  .carta {
+    width: 90%;
+    margin-top: 5vh;
+    padding: 30px 20px 20px;
   }
 
-  /* ---------- Ramo SVG ---------- */
-  #garden-svg{
-    position:absolute; left:0; bottom:0; width:100%; height:84%;
-    display:block;
-    overflow:visible;
+  .sun-glow {
+    top: 35%;
+    width: 100vmax;
+    height: 100vmax;
   }
-  .flower-anchor{
-    opacity:0;
-    animation:growUp 1.4s cubic-bezier(.16,1,.3,1) forwards;
-    animation-delay:var(--grow-delay,0s);
-  }
-  @keyframes growUp{
-    0%{ transform:scale(0.02,0.02); opacity:0; }
-    40%{ opacity:1; }
-    100%{ transform:scale(1,1); opacity:1; }
-  }
-  .flower-sway{
-    animation:sway var(--sway-dur,6s) ease-in-out var(--sway-delay,0s) infinite;
-  }
-  @keyframes sway{
-    0%,100%{ transform:rotate(-1.2deg); }
-    50%{ transform:rotate(1.2deg); }
-  }
-  .flower-head-breathe{
-    animation:breathe var(--breathe-dur,7s) ease-in-out var(--breathe-delay,0s) infinite;
-    transform-origin:center;
-  }
-  @keyframes breathe{
-    0%,100%{ transform:scale(1); }
-    50%{ transform:scale(1.04); }
-  }
-  .flower{
-    filter: drop-shadow(0 3px 6px rgba(28, 14, 5, 0.22));
-    opacity: 0.98;
-  }
-  .flower.layer1{ filter:blur(0.8px) brightness(0.9); opacity:.88; }
-  .flower.layer2{ filter:blur(0.5px) brightness(0.95); opacity:.93; }
-  .flower.layer3{ filter:blur(0.2px); opacity:.98; }
-  .flower.layer4{ filter:drop-shadow(0 4px 6px rgba(32,15,4,0.22)); opacity:1; }
-  .flower.layer5{ filter:drop-shadow(0 6px 12px rgba(32,15,4,0.32)); opacity:1; }
-
-  .ribbon{ opacity:0; animation:fadeIn 1.2s ease-out 2.6s forwards; }
-
-  /* Destello sorpresa */
-  .surprise-flash{
-    position:absolute; inset:0;
-    background:radial-gradient(circle at 50% 60%, rgba(255,240,200,.55), rgba(255,240,200,0) 55%);
-    opacity:0; pointer-events:none;
-  }
-  .surprise-flash.on{ animation:flash 2.6s ease-out forwards; }
-  @keyframes flash{
-    0%{opacity:0;} 25%{opacity:1;} 100%{opacity:0;}
-  }
-
-  /* ---------- Partículas ---------- */
-  #fireflies, #petals-fall, #sparkles{ position:absolute; inset:0; pointer-events:none; }
-  .firefly{
-    position:absolute; width:5px; height:5px; border-radius:50%;
-    background:#ffe9a8;
-    box-shadow:0 0 6px 2px rgba(255,233,168,.9), 0 0 14px 6px rgba(255,200,120,.35);
-    opacity:0;
-    animation:fireflyMove var(--fdur,9s) ease-in-out var(--fdelay,0s) infinite;
-  }
-  @keyframes fireflyMove{
-    0%{ transform:translate(0,0); opacity:0; }
-    10%{ opacity:.9; }
-    50%{ transform:translate(var(--fx,20px), var(--fy,-30px)); opacity:.5; }
-    90%{ opacity:.9; }
-    100%{ transform:translate(0,0); opacity:0; }
-  }
-  .falling-petal{
-    position:absolute; top:-5%; width:10px; height:8px;
-    background:linear-gradient(160deg,#ffe27a,#f2932c);
-    border-radius:0% 100% 0% 100%/0% 100% 0% 100%;
-    opacity:.85;
-    animation:petalFall var(--pdur,14s) linear var(--pdelay,0s) infinite;
-  }
-  @keyframes petalFall{
-    0%{ transform:translate(0,0) rotate(0deg); opacity:0; }
-    8%{ opacity:.85; }
-    100%{ transform:translate(var(--px,60px),115vh) rotate(300deg); opacity:.2; }
-  }
-  .sparkle{
-    position:absolute; width:4px; height:4px;
-    background:radial-gradient(circle, #fff6d8 0%, rgba(255,246,216,0) 70%);
-    border-radius:50%;
-    animation:twinkle var(--tdur,3.5s) ease-in-out var(--tdelay,0s) infinite;
-  }
-  @keyframes twinkle{
-    0%,100%{ opacity:.15; transform:scale(.7); }
-    50%{ opacity:1; transform:scale(1.4); }
-  }
-
-  /* ---------- Interfaz ---------- */
-  .ui{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; z-index:5; }
-  .view{ display:flex; flex-direction:column; align-items:center; text-align:center; transition:opacity .9s ease; padding:0 24px; }
-  .view.hidden{ opacity:0; pointer-events:none; position:absolute; }
-
-  .hint{
-    font-family:'Cormorant Garamond', serif; font-style:italic; font-weight:500;
-    font-size:clamp(1.1rem,2.6vw,1.5rem); color:#fff3df;
-    text-shadow:0 2px 10px rgba(0,0,0,.35); letter-spacing:.02em;
-    opacity:0; transform:translateY(10px);
-    animation:riseIn 1.4s ease-out 3.4s forwards;
-    margin-bottom:34px;
-  }
-  @keyframes riseIn{ to{ opacity:1; transform:translateY(0); } }
-
-  .btn{
-    font-family:'Cormorant Garamond', serif; font-size:1.15rem; letter-spacing:.03em;
-    color:#3a2b1a; background:linear-gradient(180deg,#ffe9b0,#f3c366);
-    border:1px solid rgba(122,75,18,.35); padding:14px 34px; border-radius:30px; cursor:pointer;
-    box-shadow:0 6px 18px rgba(90,50,10,.35), inset 0 1px 0 rgba(255,255,255,.6);
-    opacity:0; transform:translateY(10px);
-    animation:riseIn 1.4s ease-out 4s forwards;
-    transition:transform .35s ease, box-shadow .35s ease;
-  }
-  .btn:hover{ transform:translateY(-2px); box-shadow:0 10px 22px rgba(90,50,10,.4); }
-  .btn:focus-visible{ outline:2px solid #fff3df; outline-offset:3px; }
-
-  .carta{
-    max-width:min(480px,86vw);
-    background:linear-gradient(180deg,var(--paper),#fdf1da);
-    border-radius:6px; padding:44px 34px 32px;
-    box-shadow:0 20px 50px rgba(30,15,5,.45);
-    position:relative;
-  }
-  .carta::before{
-    content:""; position:absolute; inset:10px;
-    border:1px solid rgba(180,130,50,.25); border-radius:3px; pointer-events:none;
-  }
-  .carta-flower{ width:56px; height:56px; margin:0 auto 14px; display:block; }
-  .texto-manuscrito{
-    font-family:'Dancing Script', cursive;
-    font-size:clamp(1.4rem,3.4vw,1.9rem); line-height:1.5; color:var(--ink);
-    margin:0 0 26px;
-  }
-  .btn-mini{
-    font-family:'Cormorant Garamond', serif; font-style:italic; font-size:.95rem;
-    color:var(--gold); background:none; border:none; cursor:pointer; padding:6px 10px;
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    .flower-anchor,.flower-sway,.flower-head-breathe,.firefly,.falling-petal,.sparkle,.hint,.btn,.sky,.hills,.ground,.ribbon{
-      animation-duration:.01ms !important;
-      animation-iteration-count:1 !important;
-    }
-  }
-  /* ---------- Ajustes Responsivos para Móvil ---------- */
-  @media (max-width: 768px) {
-    /* Engañamos al navegador: Hacemos el lienzo casi 3 veces más ancho que el celular */
-    #garden-svg {
-      width: 260%;
-      left: -80%; /* Lo centramos matemáticamente: (260 - 100) / 2 = 80 */
-      height: 85%;
-      bottom: -2%;
-    }
-
-    /* Subimos la interfaz para que el súper ramo no tape el botón */
-    .ui {
-      align-items: center;
-      padding-top: 15vh;
-    }
-
-    /* Ajustamos la carta para que no se desborde */
-    .carta {
-      width: 90%;
-      margin-top: 5vh;
-      padding: 30px 20px 20px;
-    }
-
-    /* Subimos el sol un poco para que no quede detrás del ramo tan grande */
-    .sun-glow {
-      top: 35%;
-      width: 100vmax;
-      height: 100vmax;
-    }
-  }
+}
